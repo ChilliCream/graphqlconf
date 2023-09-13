@@ -44,17 +44,66 @@ const typeDefs = `
   scalar DateTime
 `;
 
-// Mock data for demonstration
+```javascript
 const users = [
   {
     __typename: 'User',
     id: "1",
-    name: "John Doe",
+    name: "Pascal",
     birthdate: "2000-01-01T00:00:00Z",
-    username: "johndoe",
+    username: "pascal",
   },
-  // ... add more mock users if needed
+  {
+    __typename: 'User',
+    id: "2",
+    name: "Sophie",
+    birthdate: "1995-05-10T00:00:00Z",
+    username: "sophie95",
+  },
+  {
+    __typename: 'User',
+    id: "3",
+    name: "Ethan",
+    birthdate: "1988-12-12T00:00:00Z",
+    username: "ethan88",
+  },
+  {
+    __typename: 'User',
+    id: "4",
+    name: "Grace",
+    birthdate: "2002-07-24T00:00:00Z",
+    username: "graceful02",
+  },
+  {
+    __typename: 'User',
+    id: "5",
+    name: "Aiden",
+    birthdate: "1992-03-03T00:00:00Z",
+    username: "aiden92",
+  },
+  {
+    __typename: 'User',
+    id: "6",
+    name: "Chloe",
+    birthdate: "1998-08-15T00:00:00Z",
+    username: "chloe_98",
+  },
+  {
+    __typename: 'User',
+    id: "7",
+    name: "Dylan",
+    birthdate: "1990-10-05T00:00:00Z",
+    username: "dylan_rock",
+  },
+  {
+    __typename: 'User',
+    id: "8",
+    name: "Olivia",
+    birthdate: "2004-02-29T00:00:00Z",
+    username: "olive04",
+  }
 ];
+```
 
 const resolvers = {
   Query: {
