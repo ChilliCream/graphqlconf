@@ -1,109 +1,70 @@
-import express from "express";
-import { createYoga, createSchema } from "graphql-yoga";
-
 import bcpMiddleware from "@chillicream/bananacakepop-express-middleware";
 
-const typeDefs = `
-  interface Node {
-    id: ID!
-  }
+import express from "express";
+import { createYoga, createSchema } from "graphql-yoga";
+import fs from "fs";
+import path from "path";
 
-  type PageInfo {
-    hasNextPage: Boolean!
-    hasPreviousPage: Boolean!
-    startCursor: String
-    endCursor: String
-  }
+const typeDefs = fs.readFileSync("./schema.graphql", "utf-8");
 
-  type Query {
-    node(id: ID!): Node
-    nodes(ids: [ID!]!): [Node]!
-    userById(id: ID!): User
-    userByUsername(username: String!): User
-    users(first: Int, after: String, last: Int, before: String): UsersConnection
-  }
-
-  type User implements Node {
-    id: ID!
-    name: String!
-    birthdate: String!
-    username: String!
-  }
-
-  type UsersConnection {
-    pageInfo: PageInfo!
-    edges: [UsersEdge!]
-    nodes: [User!]
-  }
-
-  type UsersEdge {
-    cursor: String!
-    node: User!
-  }
-
-  scalar DateTime
-`;
-
-```javascript
 const users = [
   {
     __typename: 'User',
     id: "1",
-    name: "Pascal",
+    displayName: "Pascal",
     birthdate: "2000-01-01T00:00:00Z",
-    username: "pascal",
+    name: "pascal",
   },
   {
     __typename: 'User',
     id: "2",
-    name: "Sophie",
+    displayName: "Sophie",
     birthdate: "1995-05-10T00:00:00Z",
-    username: "sophie95",
+    name: "sophie95",
   },
   {
     __typename: 'User',
     id: "3",
-    name: "Ethan",
+    displayName: "Ethan",
     birthdate: "1988-12-12T00:00:00Z",
-    username: "ethan88",
+    name: "ethan88",
   },
   {
     __typename: 'User',
     id: "4",
-    name: "Grace",
+    displayName: "Grace",
     birthdate: "2002-07-24T00:00:00Z",
-    username: "graceful02",
+    name: "graceful02",
   },
   {
     __typename: 'User',
     id: "5",
-    name: "Aiden",
+    displayName: "Aiden",
     birthdate: "1992-03-03T00:00:00Z",
-    username: "aiden92",
+    name: "aiden92",
   },
   {
     __typename: 'User',
     id: "6",
-    name: "Chloe",
+    displayName: "Chloe",
     birthdate: "1998-08-15T00:00:00Z",
-    username: "chloe_98",
+    name: "chloe_98",
   },
   {
     __typename: 'User',
     id: "7",
-    name: "Dylan",
+    displayName: "Dylan",
     birthdate: "1990-10-05T00:00:00Z",
-    username: "dylan_rock",
+    name: "dylan_rock",
   },
   {
     __typename: 'User',
     id: "8",
-    name: "Olivia",
+    displayName: "Olivia",
     birthdate: "2004-02-29T00:00:00Z",
-    username: "olive04",
+    name: "olive04",
   }
 ];
-```
 
 const resolvers = {
   Query: {
@@ -114,17 +75,17 @@ const resolvers = {
       }
     },
     nodes: (_, { ids }) => {
-      return users.filter((user) => {
-        const { type, localId } = fromGlobalId(id);
-        if (type === "User") {
-          return users.find((user) => user.id === localId);
-        }
-        return null;
+      const idValues = ids.map((id) => fromGlobalId(id));
+    
+      return users.filter(user => {
+        return idValues.some(idValue => 
+          idValue.type === "User" && user.id === idValue.localId
+        );
       });
     },
     userById: (_, { id }) => users.find((user) => user.id === id),
-    userByUsername: (_, { username }) =>
-      users.find((user) => user.username === username),
+    userByName: (_, { name }) =>
+      users.find((user) => user.name === name),
     users: (_, args) => {
       return {
         pageInfo: {
