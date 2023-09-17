@@ -1,16 +1,25 @@
 ﻿schema
   @fusion(version: 1)
   @transport(subgraph: "accounts", group: "Fusion", location: "http:\/\/localhost:3000\/graphql", kind: "HTTP")
-  @transport(subgraph: "reviews", group: "Fusion", location: "http:\/\/localhost:59092\/graphql", kind: "HTTP") {
+  @transport(subgraph: "reviews", group: "Fusion", location: "http:\/\/localhost:59092\/graphql", kind: "HTTP")
+  @transport(subgraph: "products", group: "Fusion", location: "http:\/\/localhost:3020\/graphql", kind: "HTTP") {
   query: Query
   mutation: Mutation
   subscription: Subscription
 }
 
 type Query {
-  productById(id: ID!): Product!
+  productById(id: ID!): Product
     @variable(subgraph: "reviews", name: "id", argument: "id")
     @resolver(subgraph: "reviews", select: "{ productById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+    @variable(subgraph: "products", name: "id", argument: "id")
+    @resolver(subgraph: "products", select: "{ productById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+  products("Returns the elements in the list that come after the specified cursor." after: String "Returns the elements in the list that come before the specified cursor." before: String "Returns the first _n_ elements from the list." first: Int "Returns the last _n_ elements from the list." last: Int): ProductsConnection
+    @variable(subgraph: "products", name: "after", argument: "after")
+    @variable(subgraph: "products", name: "before", argument: "before")
+    @variable(subgraph: "products", name: "first", argument: "first")
+    @variable(subgraph: "products", name: "last", argument: "last")
+    @resolver(subgraph: "products", select: "{ products(after: $after, before: $before, first: $first, last: $last) }", arguments: [ { name: "after", type: "String" }, { name: "before", type: "String" }, { name: "first", type: "Int" }, { name: "last", type: "Int" } ])
   reviewById(id: ID!): Review
     @variable(subgraph: "reviews", name: "id", argument: "id")
     @resolver(subgraph: "reviews", select: "{ reviewById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
@@ -66,31 +75,58 @@ type PageInfo {
   endCursor: String
     @source(subgraph: "accounts")
     @source(subgraph: "reviews")
+    @source(subgraph: "products")
   "Indicates whether more edges exist following the set defined by the clients arguments."
   hasNextPage: Boolean!
     @source(subgraph: "accounts")
     @source(subgraph: "reviews")
+    @source(subgraph: "products")
   "Indicates whether more edges exist prior the set defined by the clients arguments."
   hasPreviousPage: Boolean!
     @source(subgraph: "accounts")
     @source(subgraph: "reviews")
+    @source(subgraph: "products")
   "When paginating backwards, the cursor to continue."
   startCursor: String
     @source(subgraph: "accounts")
     @source(subgraph: "reviews")
+    @source(subgraph: "products")
 }
 
-type Product
+type Product implements Node
   @variable(subgraph: "reviews", name: "Product_id", select: "id")
-  @resolver(subgraph: "reviews", select: "{ productById(id: $Product_id) }", arguments: [ { name: "Product_id", type: "ID!" } ]) {
+  @variable(subgraph: "products", name: "Product_id", select: "id")
+  @resolver(subgraph: "reviews", select: "{ productById(id: $Product_id) }", arguments: [ { name: "Product_id", type: "ID!" } ])
+  @resolver(subgraph: "products", select: "{ productById(id: $Product_id) }", arguments: [ { name: "Product_id", type: "ID!" } ])
+  @resolver(subgraph: "products", select: "{ nodes(ids: $Product_id) { ... on Product { ... Product } } }", arguments: [ { name: "Product_id", type: "[ID!]!" } ], kind: "BATCH") {
+  dimension: ProductDimension!
+    @source(subgraph: "products")
   id: ID!
     @source(subgraph: "reviews")
+    @source(subgraph: "products")
+  name: String!
+    @source(subgraph: "products")
+  pictureFileName: String
+    @source(subgraph: "products")
+  pictureUrl: URL
+    @source(subgraph: "products")
+  price: Float!
+    @source(subgraph: "products")
   reviews("Returns the elements in the list that come after the specified cursor." after: String "Returns the elements in the list that come before the specified cursor." before: String "Returns the first _n_ elements from the list." first: Int "Returns the last _n_ elements from the list." last: Int): ProductReviewsConnection
     @source(subgraph: "reviews")
     @variable(subgraph: "reviews", name: "after", argument: "after")
     @variable(subgraph: "reviews", name: "before", argument: "before")
     @variable(subgraph: "reviews", name: "first", argument: "first")
     @variable(subgraph: "reviews", name: "last", argument: "last")
+  weight: Int!
+    @source(subgraph: "products")
+}
+
+type ProductDimension {
+  size: Int!
+    @source(subgraph: "products")
+  weight: Int!
+    @source(subgraph: "products")
 }
 
 "A connection to a list of items."
@@ -114,6 +150,29 @@ type ProductReviewsEdge {
   "The item at the end of the edge."
   node: Review!
     @source(subgraph: "reviews")
+}
+
+"A connection to a list of items."
+type ProductsConnection {
+  "A list of edges."
+  edges: [ProductsEdge!]
+    @source(subgraph: "products")
+  "A flattened list of the nodes."
+  nodes: [Product!]
+    @source(subgraph: "products")
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+    @source(subgraph: "products")
+}
+
+"An edge in a connection."
+type ProductsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+    @source(subgraph: "products")
+  "The item at the end of the edge."
+  node: Product!
+    @source(subgraph: "products")
 }
 
 type Review implements Node
@@ -228,3 +287,5 @@ input CreateReviewInput {
 }
 
 scalar DateTime
+
+scalar URL
