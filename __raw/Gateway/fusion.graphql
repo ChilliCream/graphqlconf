@@ -1,0 +1,316 @@
+﻿schema
+  @fusion(version: 1)
+  @transport(subgraph: "accounts", group: "Fusion", location: "http:\/\/localhost:3000\/graphql", kind: "HTTP")
+  @transport(subgraph: "reviews", group: "Fusion", location: "http:\/\/localhost:59092\/graphql", kind: "HTTP")
+  @transport(subgraph: "products", group: "Fusion", location: "http:\/\/localhost:3020\/graphql", kind: "HTTP")
+  @transport(subgraph: "shipping", group: "Fusion", location: "http:\/\/localhost:59094\/graphql", kind: "HTTP")
+  @transport(subgraph: "productDetails", group: "Fusion", location: "http:\/\/localhost:5095\/graphql", kind: "HTTP") {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Query {
+  productById(id: ID!): Product
+    @variable(subgraph: "reviews", name: "id", argument: "id")
+    @resolver(subgraph: "reviews", select: "{ productById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+    @variable(subgraph: "products", name: "id", argument: "id")
+    @resolver(subgraph: "products", select: "{ productById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+    @variable(subgraph: "shipping", name: "id", argument: "id")
+    @resolver(subgraph: "shipping", select: "{ productById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+  products("Returns the elements in the list that come after the specified cursor." after: String "Returns the elements in the list that come before the specified cursor." before: String "Returns the first _n_ elements from the list." first: Int "Returns the last _n_ elements from the list." last: Int): ProductsConnection
+    @variable(subgraph: "products", name: "after", argument: "after")
+    @variable(subgraph: "products", name: "before", argument: "before")
+    @variable(subgraph: "products", name: "first", argument: "first")
+    @variable(subgraph: "products", name: "last", argument: "last")
+    @resolver(subgraph: "products", select: "{ products(after: $after, before: $before, first: $first, last: $last) }", arguments: [ { name: "after", type: "String" }, { name: "before", type: "String" }, { name: "first", type: "Int" }, { name: "last", type: "Int" } ])
+  reviewById(id: ID!): Review
+    @variable(subgraph: "reviews", name: "id", argument: "id")
+    @resolver(subgraph: "reviews", select: "{ reviewById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+  reviews("Returns the elements in the list that come after the specified cursor." after: String "Returns the elements in the list that come before the specified cursor." before: String "Returns the first _n_ elements from the list." first: Int "Returns the last _n_ elements from the list." last: Int): ReviewsConnection
+    @variable(subgraph: "reviews", name: "after", argument: "after")
+    @variable(subgraph: "reviews", name: "before", argument: "before")
+    @variable(subgraph: "reviews", name: "first", argument: "first")
+    @variable(subgraph: "reviews", name: "last", argument: "last")
+    @resolver(subgraph: "reviews", select: "{ reviews(after: $after, before: $before, first: $first, last: $last) }", arguments: [ { name: "after", type: "String" }, { name: "before", type: "String" }, { name: "first", type: "Int" }, { name: "last", type: "Int" } ])
+  userById(id: ID!): User
+    @variable(subgraph: "accounts", name: "id", argument: "id")
+    @resolver(subgraph: "accounts", select: "{ userById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+    @variable(subgraph: "reviews", name: "id", argument: "id")
+    @resolver(subgraph: "reviews", select: "{ userById(id: $id) }", arguments: [ { name: "id", type: "ID!" } ])
+  userByName(name: String!): User
+    @variable(subgraph: "accounts", name: "name", argument: "name")
+    @resolver(subgraph: "accounts", select: "{ userByName(name: $name) }", arguments: [ { name: "name", type: "String!" } ])
+  users("Returns the elements in the list that come after the specified cursor." after: String "Returns the elements in the list that come before the specified cursor." before: String "Returns the first _n_ elements from the list." first: Int "Returns the last _n_ elements from the list." last: Int): UsersConnection
+    @variable(subgraph: "accounts", name: "after", argument: "after")
+    @variable(subgraph: "accounts", name: "before", argument: "before")
+    @variable(subgraph: "accounts", name: "first", argument: "first")
+    @variable(subgraph: "accounts", name: "last", argument: "last")
+    @resolver(subgraph: "accounts", select: "{ users(after: $after, before: $before, first: $first, last: $last) }", arguments: [ { name: "after", type: "String" }, { name: "before", type: "String" }, { name: "first", type: "Int" }, { name: "last", type: "Int" } ])
+    @variable(subgraph: "reviews", name: "after", argument: "after")
+    @variable(subgraph: "reviews", name: "before", argument: "before")
+    @variable(subgraph: "reviews", name: "first", argument: "first")
+    @variable(subgraph: "reviews", name: "last", argument: "last")
+    @resolver(subgraph: "reviews", select: "{ users(after: $after, before: $before, first: $first, last: $last) }", arguments: [ { name: "after", type: "String" }, { name: "before", type: "String" }, { name: "first", type: "Int" }, { name: "last", type: "Int" } ])
+  usersById(ids: [ID!]!): [User!]!
+    @variable(subgraph: "reviews", name: "ids", argument: "ids")
+    @resolver(subgraph: "reviews", select: "{ usersById(ids: $ids) }", arguments: [ { name: "ids", type: "[ID!]!" } ])
+}
+
+type Mutation {
+  createReview(input: CreateReviewInput!): CreateReviewPayload!
+    @variable(subgraph: "reviews", name: "input", argument: "input")
+    @resolver(subgraph: "reviews", select: "{ createReview(input: $input) }", arguments: [ { name: "input", type: "CreateReviewInput!" } ])
+}
+
+type Subscription {
+  onCreateReview: Review!
+    @resolver(subgraph: "reviews", select: "{ onCreateReview }", kind: "SUBSCRIBE")
+}
+
+type CreateReviewPayload {
+  review: Review
+    @source(subgraph: "reviews")
+}
+
+type DeliveryEstimate {
+  max: Int!
+    @source(subgraph: "shipping")
+  min: Int!
+    @source(subgraph: "shipping")
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+    @source(subgraph: "products")
+  "Indicates whether more edges exist following the set defined by the clients arguments."
+  hasNextPage: Boolean!
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+    @source(subgraph: "products")
+  "Indicates whether more edges exist prior the set defined by the clients arguments."
+  hasPreviousPage: Boolean!
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+    @source(subgraph: "products")
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+    @source(subgraph: "products")
+}
+
+type Product implements Node
+  @variable(subgraph: "reviews", name: "Product_id", select: "id")
+  @variable(subgraph: "products", name: "Product_id", select: "id")
+  @variable(subgraph: "shipping", name: "Product_id", select: "id")
+  @variable(subgraph: "productDetails", name: "Product_id", select: "id")
+  @resolver(subgraph: "reviews", select: "{ productById(id: $Product_id) }", arguments: [ { name: "Product_id", type: "ID!" } ])
+  @resolver(subgraph: "products", select: "{ productById(id: $Product_id) }", arguments: [ { name: "Product_id", type: "ID!" } ])
+  @resolver(subgraph: "shipping", select: "{ productById(id: $Product_id) }", arguments: [ { name: "Product_id", type: "ID!" } ])
+  @resolver(subgraph: "productDetails", select: "{ _entities(representations: { __typename: \"Product\", id: $Product_id }) { ... on Product { ... Product } } }", arguments: [ { name: "Product_id", type: "ID!" } ])
+  @resolver(subgraph: "products", select: "{ nodes(ids: $Product_id) { ... on Product { ... Product } } }", arguments: [ { name: "Product_id", type: "[ID!]!" } ], kind: "BATCH") {
+  deliveryEstimate(zip: String!): DeliveryEstimate!
+    @source(subgraph: "shipping")
+    @variable(subgraph: "shipping", name: "zip", argument: "zip")
+    @variable(subgraph: "products", name: "Product_dimension_size", select: "dimension { size }")
+    @variable(subgraph: "products", name: "Product_dimension_weight", select: "dimension { weight }")
+    @resolver(subgraph: "shipping", select: "{ deliveryEstimate(size: $Product_dimension_size, weight: $Product_dimension_weight, zip: $zip) }", arguments: [ { name: "Product_dimension_size", type: "Int!" }, { name: "Product_dimension_weight", type: "Int!" }, { name: "zip", type: "String!" } ])
+  dimension: ProductDimension!
+    @source(subgraph: "products")
+  id: ID!
+    @source(subgraph: "reviews")
+    @source(subgraph: "products")
+    @source(subgraph: "shipping")
+    @source(subgraph: "productDetails")
+  name: String!
+    @source(subgraph: "products")
+  description: String
+    @source(subgraph: "productDetails")
+  pictureFileName: String
+    @source(subgraph: "products")
+  pictureUrl: URL
+    @source(subgraph: "products")
+  price: Float!
+    @source(subgraph: "products")
+  reviews("Returns the elements in the list that come after the specified cursor." after: String "Returns the elements in the list that come before the specified cursor." before: String "Returns the first _n_ elements from the list." first: Int "Returns the last _n_ elements from the list." last: Int): ProductReviewsConnection
+    @source(subgraph: "reviews")
+    @variable(subgraph: "reviews", name: "after", argument: "after")
+    @variable(subgraph: "reviews", name: "before", argument: "before")
+    @variable(subgraph: "reviews", name: "first", argument: "first")
+    @variable(subgraph: "reviews", name: "last", argument: "last")
+  weight: Int!
+    @source(subgraph: "products")
+}
+
+type ProductDimension {
+  size: Int!
+    @source(subgraph: "products")
+  weight: Int!
+    @source(subgraph: "products")
+}
+
+"A connection to a list of items."
+type ProductReviewsConnection {
+  "A list of edges."
+  edges: [ProductReviewsEdge!]
+    @source(subgraph: "reviews")
+  "A flattened list of the nodes."
+  nodes: [Review!]
+    @source(subgraph: "reviews")
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+    @source(subgraph: "reviews")
+}
+
+"An edge in a connection."
+type ProductReviewsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+    @source(subgraph: "reviews")
+  "The item at the end of the edge."
+  node: Review!
+    @source(subgraph: "reviews")
+}
+
+"A connection to a list of items."
+type ProductsConnection {
+  "A list of edges."
+  edges: [ProductsEdge!]
+    @source(subgraph: "products")
+  "A flattened list of the nodes."
+  nodes: [Product!]
+    @source(subgraph: "products")
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+    @source(subgraph: "products")
+}
+
+"An edge in a connection."
+type ProductsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+    @source(subgraph: "products")
+  "The item at the end of the edge."
+  node: Product!
+    @source(subgraph: "products")
+}
+
+type Review implements Node
+  @variable(subgraph: "reviews", name: "Review_id", select: "id")
+  @resolver(subgraph: "reviews", select: "{ reviewById(id: $Review_id) }", arguments: [ { name: "Review_id", type: "ID!" } ])
+  @resolver(subgraph: "reviews", select: "{ nodes(ids: $Review_id) { ... on Review { ... Review } } }", arguments: [ { name: "Review_id", type: "[ID!]!" } ], kind: "BATCH") {
+  author: User!
+    @source(subgraph: "reviews")
+  body: String!
+    @source(subgraph: "reviews")
+  fooBarBaz: String!
+    @source(subgraph: "reviews")
+  id: ID!
+    @source(subgraph: "reviews")
+  product: Product!
+    @source(subgraph: "reviews")
+  stars: Int!
+    @source(subgraph: "reviews")
+  thisIsInternal: String!
+    @source(subgraph: "reviews")
+}
+
+"A connection to a list of items."
+type ReviewsConnection {
+  "A list of edges."
+  edges: [ReviewsEdge!]
+    @source(subgraph: "reviews")
+  "A flattened list of the nodes."
+  nodes: [Review!]
+    @source(subgraph: "reviews")
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+    @source(subgraph: "reviews")
+}
+
+"An edge in a connection."
+type ReviewsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+    @source(subgraph: "reviews")
+  "The item at the end of the edge."
+  node: Review!
+    @source(subgraph: "reviews")
+}
+
+type User implements Node
+  @variable(subgraph: "accounts", name: "User_id", select: "id")
+  @variable(subgraph: "reviews", name: "User_id", select: "id")
+  @variable(subgraph: "accounts", name: "User_name", select: "name")
+  @variable(subgraph: "reviews", name: "User_name", select: "name")
+  @resolver(subgraph: "accounts", select: "{ userById(id: $User_id) }", arguments: [ { name: "User_id", type: "ID!" } ])
+  @resolver(subgraph: "accounts", select: "{ userByName(name: $User_name) }", arguments: [ { name: "User_name", type: "String!" } ])
+  @resolver(subgraph: "reviews", select: "{ userById(id: $User_id) }", arguments: [ { name: "User_id", type: "ID!" } ])
+  @resolver(subgraph: "accounts", select: "{ nodes(ids: $User_id) { ... on User { ... User } } }", arguments: [ { name: "User_id", type: "[ID!]!" } ], kind: "BATCH")
+  @resolver(subgraph: "reviews", select: "{ nodes(ids: $User_id) { ... on User { ... User } } }", arguments: [ { name: "User_id", type: "[ID!]!" } ], kind: "BATCH") {
+  birthdate: String!
+    @source(subgraph: "accounts")
+  displayName: String!
+    @source(subgraph: "accounts")
+  id: ID!
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+  name: String!
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+  reviews("Returns the elements in the list that come after the specified cursor." after: String "Returns the elements in the list that come before the specified cursor." before: String "Returns the first _n_ elements from the list." first: Int "Returns the last _n_ elements from the list." last: Int): ReviewsConnection
+    @source(subgraph: "reviews")
+    @variable(subgraph: "reviews", name: "after", argument: "after")
+    @variable(subgraph: "reviews", name: "before", argument: "before")
+    @variable(subgraph: "reviews", name: "first", argument: "first")
+    @variable(subgraph: "reviews", name: "last", argument: "last")
+}
+
+"A connection to a list of items."
+type UsersConnection {
+  "A list of edges."
+  edges: [UsersEdge!]
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+  "A flattened list of the nodes."
+  nodes: [User!]
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+}
+
+"An edge in a connection."
+type UsersEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+  "The item at the end of the edge."
+  node: User!
+    @source(subgraph: "accounts")
+    @source(subgraph: "reviews")
+}
+
+"The node interface is implemented by entities that have a global unique identifier."
+interface Node {
+  id: ID!
+}
+
+input CreateReviewInput {
+  authorId: ID!
+  body: String!
+  productId: ID!
+  stars: Int!
+}
+
+scalar DateTime
+
+scalar URL
