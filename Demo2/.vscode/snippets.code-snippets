@@ -1,0 +1,7 @@
+{
+  "require-size": {
+    "prefix": "require-size",
+    "body": ["@require(field: \"dimension { size }\")"],
+    "description": "require-size"
+  }
+}

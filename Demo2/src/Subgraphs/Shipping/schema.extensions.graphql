@@ -1,0 +1,7 @@
+extend type Product {
+  deliveryEstimate(
+    size: Int! 
+    weight: Int! @require(field: "dimension { weight }")
+    zip: String!
+  ): DeliveryEstimate!
+}
