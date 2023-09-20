@@ -3,5 +3,24 @@
     "prefix": "require-size",
     "body": ["@require(field: \"dimension { size }\")"],
     "description": "require-size"
+  },
+  "require-weight": {
+    "prefix": "require-weight",
+    "body": ["@require(field: \"dimension { weight }\")"],
+    "description": "require-weight"
+  },
+  "extend-product": {
+    "prefix": "extend-product",
+    "body": [
+      "extend type Product {",
+      "  deliveryEstimate(",
+      "    size: Int!",
+      "    weight: Int!",
+      "    zip: String!",
+      "  ): DeliveryEstimate!",
+      "}",
+      ""
+    ],
+    "description": "extend-product"
   }
 }
