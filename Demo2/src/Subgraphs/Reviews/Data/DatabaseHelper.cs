@@ -20,7 +20,39 @@ public static class DatabaseHelper
                 Name = "sophie95"
             };
 
-            await context.Users.AddRangeAsync(ada, alan);
+            var alan1 = new User
+            {
+                Name = "ethan88"
+            };
+
+            var alan2 = new User
+            {
+                Name = "graceful02"
+            };
+
+            var alan3 = new User
+            {
+                Name = "aiden92"
+            };
+
+            var alan4 = new User
+            {
+                Name = "dylan_rock"
+            };
+
+            var alan5 = new User
+            {
+                Name = "olive04"
+            };
+
+            await context.Users.AddRangeAsync(
+                ada, 
+                alan,
+                alan1,
+                alan2,
+                alan3,
+                alan4,
+                alan5);
 
             await context.Reviews.AddRangeAsync(
                 new Review
