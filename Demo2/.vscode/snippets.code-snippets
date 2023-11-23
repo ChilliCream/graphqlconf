@@ -96,5 +96,16 @@
       "}"
   ],
   "description": "_AddProduct"
+},
+"GetProductById": {
+  "prefix": "GetProductById",
+  "body": [
+      "public static Task<Product?> GetProductByIdAsync(",
+      "    int id, ",
+      "    ProductContext context, ",
+      "    CancellationToken cancellationToken) ",
+      "    => context.Products.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);"
+  ],
+  "description": "GetProductById"
 }
 }
