@@ -10,7 +10,6 @@ type Query {
 type Product implements Node {
   id: ID!
   name: String!
-  price: Float!
   weight: Int!
   pictureFileName: String
   dimension: ProductDimension!

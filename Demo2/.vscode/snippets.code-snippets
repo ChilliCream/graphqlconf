@@ -22,5 +22,79 @@
       ""
     ],
     "description": "extend-product"
-  }
+  },
+  "_efcore": {
+    "prefix": "_efcore",
+    "body": [
+      "    <PackageReference Include=\"HotChocolate.Data.EntityFramework\" Version=\"13.7.0\" />"
+      "    <PackageReference Include=\"Microsoft.EntityFrameworkCore.Sqlite\" Version=\"8.0.0-rc.2.23480.1\" />",
+      "    <PackageReference Include=\"Microsoft.EntityFrameworkCore.Tools\" Version=\"8.0.0-rc.2.23480.1\">",
+      "      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>",
+      "      <PrivateAssets>all</PrivateAssets>",
+      "    </PackageReference>"
+    ],
+    "description": "_efcore"
+  },
+  "_product": {
+    "prefix": "_product",
+    "body": [
+      "public class Product",
+      "{",
+      "    [Key] public int Id { get; set; }",
+      "",
+      "    public double Price { get; set; }",
+      "}"
+    ],
+    "description": "_product"
+  },
+  "_productContext": {
+    "prefix": "_productContext",
+    "body": [
+        "public class ProductContext : DbContext",
+        "{",
+        "    public ProductContext(DbContextOptions options) : base(options)",
+        "    {",
+        "    }",
+        "",
+        "    public DbSet<Product> Products => Set<Product>();",
+        "}"
+    ],
+    "description": "_productContext"
+},
+"_addDbContext": {
+  "prefix": "_addDbContext",
+  "body": [
+      "builder.Services",
+      "    .AddDbContextPool<ProductContext>(",
+      "        o => o.UseSqlite(\"Data Source=products.db\"));"
+  ],
+  "description": "_addDbContext"
+},
+"_mutation": {
+  "prefix": "_mutation",
+  "body": [
+      "[MutationType]",
+      "public static class Mutation ",
+      "{",
+      "    ",
+      "}"
+  ],
+  "description": "_mutation"
+},
+"_SetProductPrice": {
+  "prefix": "_SetProductPrice",
+  "body": [
+      "public static async Task<Product> SetProductPriceAsync(",
+      "    int id, double price, ",
+      "    ProductContext productContext, ",
+      "    CancellationToken cancellationToken)",
+      "{",
+      "    var product = new Product { Id = id, Price = price };",
+      "    productContext.Products.Add(product);",
+      "    await productContext.SaveChangesAsync(cancellationToken);",
+      "    return product;",
+      "}"
+  ],
+  "description": "_AddProduct"
+}
 }

@@ -1,0 +1,4 @@
+{
+  "subgraph": "pricing",
+  "http": { "baseAddress": "http://localhost:3020/graphql" }
+}
